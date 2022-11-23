@@ -1,8 +1,8 @@
 import React from 'react'
 
 import Mark from './Mark'
-import {selectionIsEmpty, selectionIsBackwards, splitWithOffsets} from './utils'
-import {Span} from './span'
+import { selectionIsEmpty, selectionIsBackwards, splitWithOffsets } from './utils'
+import { Span } from './span'
 
 const Split = props => {
   if (props.mark) return <Mark {...props} />
@@ -11,7 +11,7 @@ const Split = props => {
     <span
       data-start={props.start}
       data-end={props.end}
-      onClick={() => props.onClick({start: props.start, end: props.end})}
+      onClick={() => props.onClick({ start: props.start, end: props.end })}
     >
       {props.content}
     </span>
@@ -36,7 +36,7 @@ const TextAnnotator = <T extends Span>(props: TextAnnotatorProps<T>) => {
   const getSpan = (span: TextSpan): T => {
     // TODO: Better typings here.
     if (props.getSpan) return props.getSpan(span) as T
-    return {start: span.start, end: span.end} as T
+    return { start: span.start, end: span.end } as T
   }
 
   const handleMouseUp = () => {
@@ -53,16 +53,25 @@ const TextAnnotator = <T extends Span>(props: TextAnnotatorProps<T>) => {
       parseInt(selection.focusNode.parentElement.getAttribute('data-start'), 10) +
       selection.focusOffset
 
+    const chars = [' ', '.', ',', '!']
+    while (1) {
+      console.log(end)
+      if (chars.indexOf(content[end]) > -1) {
+        break;
+      }
+      end++;
+    }
+    console.log(end)
     if (selectionIsBackwards(selection)) {
       ;[start, end] = [end, start]
     }
 
-    props.onChange([...props.value, getSpan({start, end, text: content.slice(start, end)})])
+    props.onChange([...props.value, getSpan({ start, end, text: content.slice(start, end) })])
 
     window.getSelection().empty()
   }
 
-  const handleSplitClick = ({start, end}) => {
+  const handleSplitClick = ({ start, end }) => {
     // Find and remove the matching split.
     const splitIndex = props.value.findIndex(s => s.start === start && s.end === end)
     if (splitIndex >= 0) {
@@ -70,7 +79,7 @@ const TextAnnotator = <T extends Span>(props: TextAnnotatorProps<T>) => {
     }
   }
 
-  const {content, value, style} = props
+  const { content, value, style } = props
   const splits = splitWithOffsets(content, value)
   return (
     <div style={style} onMouseUp={handleMouseUp}>
